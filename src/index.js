@@ -5,6 +5,7 @@ dotenv.config({ path: "./env" });
 
 connectDB();
 
+//! we made this file in db index so to our entry file more clear
 // (async () => {
 //   try {
 //     await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`);
