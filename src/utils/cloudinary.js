@@ -19,6 +19,7 @@ const uploadOnClodinary = async function (localFilePath) {
     });
     //file is uploaded successfully
     console.log("file is uploaded successfully", response.url);
+    fs.unlinkSync(localFilePath); // remove the file locally saved if operation is success.
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath); // remove the locally saved temp file as operation failed.

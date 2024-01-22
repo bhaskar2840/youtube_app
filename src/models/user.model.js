@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { jwt } from "jsonwebtoken"; // it is a bearer token (ek chabi ki tarah hai)
+import jwt from "jsonwebtoken"; // it is a bearer token (ek chabi ki tarah hai)
 const userSchema = new Schema(
   {
     username: {
@@ -53,7 +53,7 @@ userSchema.pre("save", async function (next) {
     return next(); // isModified is used to check if anything is modified.so it is a precheck to insure that we only change password when we need it not everytime.
   }
 
-  this.password = bcrypt.hash(this.password, 10); // 10 is salting
+  this.password = await bcrypt.hash(this.password, 10); // 10 is salting
 
   next(); // middleware therefor need to close it.
 });

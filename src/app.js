@@ -17,7 +17,7 @@ import userRouter from "./routers/user.routes.js";
 //routes declaration
 //! we will not use app.get() as we are passing route as middleware and not directly.
 
-app.use("api/v1/users", userRouter);
+app.use("/api/v1/users", userRouter);
 // http://localhost:8000/api/v1/users/register         api/v2/users is standard practise.
 
 export default app;
