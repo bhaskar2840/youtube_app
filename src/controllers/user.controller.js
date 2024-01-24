@@ -104,17 +104,23 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
 
+//////////////////////////////////////////////////////login user///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //since handelling access and refresh token is a comman task we create a custom method for it.
+//1.we are generating refresh and accesstoken for user by finding him from user_id.
+//2.save the refresh token in db.
+//3.return both access and refresh token reference.
+
 const generateAccessandRefreshToken = async (userId) => {
   try {
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
 
     //we want to save the refresh token so that no need to login again save in database.
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false }); //! validateBeforeSave is set to false so that we need not give value of other field
-
+    //! it disables Mongoose's default behavior of validating the document against the schema before saving. This means that Mongoose will not enforce schema validation rules during this particular save operation.
     return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
@@ -164,7 +170,39 @@ const loginUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options);
-    .json(new ApiResponse(200,{user:loggedInUser,accessToken,refreshToken},"User logged In Successfully"))
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { user: loggedInUser, accessToken, refreshToken },
+        "User logged In Successfully"
+      )
+    );
 });
-export { registerUser, loginUser };
+
+///////////////////////////////////////////////logout user//////////////////////////////////////////////////////////////////////////////////
+// now there is a problem here. when we try to logout we donot want some one to re-enter his username and email
+// to verify the user as when we do User.findByID(user._id) we donot have access to user._id .
+// we will design our own middleware that we will use to verify the user.
+
+// 1. once our user is verified we need to delete refresh token to logout.
+// 2. we also need to delete the cookies info
+
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined }, // deleted refresh token
+    },
+    { new: true }
+  );
+  const options = { httpOnly: true, secure: true }; // used for setting cookies .
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refeshToken", options)
+    .json(new ApiResponse(200, {}, "User loggedOUT"));
+});
+
+export { registerUser, loginUser, logoutUser };
