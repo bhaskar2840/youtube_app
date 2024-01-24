@@ -7,6 +7,7 @@ class ApiError extends Error {
     errors = [],
     stack = ""
   ) {
+    //overwrite the custom data that we will send while writing the apierrors.
     super(message);
     this.statusCode = statusCode;
     this.data = null;

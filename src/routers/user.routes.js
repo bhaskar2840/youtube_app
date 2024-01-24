@@ -6,6 +6,7 @@ const router = Router();
 
 router.route("/register").post(
   upload.fields([
+    // middle ware is added so that we can upload files
     {
       name: "avatar",
       maxCount: 1,
