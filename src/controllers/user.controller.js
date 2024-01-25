@@ -139,8 +139,11 @@ const loginUser = asyncHandler(async (req, res) => {
   //send cookies
 
   const { username, email, password } = req.body;
-  if (!username || !email) {
-    throw new ApiError(400, "USERNAME OR EMAIL not present");
+  if (!username && !email) {
+    throw new ApiError(
+      400,
+      "USERNAME OR EMAIL not present if(!(username || email)"
+    );
   }
 
   const user = await User.findOne({

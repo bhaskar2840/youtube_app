@@ -46,7 +46,7 @@ const userSchema = new Schema(
 
 // pre( ) is a hook that will do things before saving data.
 
-//!donot use arrow func for callback here as this will not have reference for the userSchema it does not contain this
+//!donot use arrow func for callback here as this will not have reference for the userSchema it does not contain this keyword
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
